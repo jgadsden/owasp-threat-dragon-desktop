@@ -9,10 +9,23 @@ if (setupEvents.handleSquirrelEvent(app)) {
         return;
 }
 const argv = require('yargs')
-  .option('verbose', {
-    alias: 'v',
-    type: 'boolean',
-    description: 'Run with verbose logging'
+  .usage('Usage: $0 <command> [options]')
+  .command({
+    command: 'report <json> <pdf>',
+    desc: 'Export the JSON threat model to a PDF report',
+    handler: (argv) => {
+      if (argv.verbose) {
+        console.log(`creating report ${argv.pdf} from ${argv.json}`)
+      }
+    }
+  })
+  .demandCommand(0, 0, '', 'Command not recognised')
+  .options({
+    'verbose': {
+      alias: 'v',
+      describe: 'Run with verbose logging',
+      type: 'boolean'
+    }
   })
   .argv;
 
@@ -72,7 +85,7 @@ app.on('ready', () => {
   if (isCalledViaCLI) {
     mainWindow = new electron.BrowserWindow({ show: false, width: 0, height: 0});
     if (argv.verbose) {
-      console.log("called with argument number", process.argv.length);
+      console.log('called with',process.argv.length, 'arguments');
     }
     app.quit();
   } else {
