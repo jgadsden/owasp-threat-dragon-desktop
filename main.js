@@ -4,6 +4,8 @@ const path = require('path');
 const electron = require('electron');
 const app = electron.app;
 const setupEvents = require('./config/squirrel');
+const log = require('electron-log');
+
 var command;
 if (setupEvents.handleSquirrelEvent(app)) {
   // squirrel event handled and app will exit in 1000ms, so don't do anything else
@@ -19,9 +21,6 @@ const argv = require('yargs')
     aliases: ['r', 'rep'],
     desc: 'Export a JSON threat model as a PDF report',
     handler: (argv) => {
-      if (argv.verbose) {
-        console.log(`creating report ${argv.pdf} from ${argv.json}`)
-      }
       command = 'report';
       app.quit();
     }
@@ -34,9 +33,22 @@ const argv = require('yargs')
       type: 'boolean'
     }
   })
+  .count('verbose')
   .help()
   .wrap(80)
   .argv;
+
+// set the log level to one of error, warn, info, verbose, debug, silly
+let verboseLevel = argv.verbose;
+if (verboseLevel == 0) {
+  log.transports.console.level = 'error';
+} else if (verboseLevel == 1) {
+  log.transports.console.level = 'info';
+} else if (verboseLevel == 2) {
+  log.transports.console.level = 'debug';
+} else {
+  log.transports.console.level = 'silly';
+}
 
 // prevent window being garbage collected
 let mainWindow;
@@ -51,9 +63,8 @@ function checkIfValidCommand() {
 
 function doCommand() {
 
-  if (argv.verbose) {
-    console.log('CLI called with command', command, 'and', process.argv.length, 'arguments');
-  }
+  log.debug('CLI called with command', command, 'and', process.argv.length, 'arguments, verbose level of', verboseLevel);
+  log.info(`creating report ${argv.pdf} from ${argv.json}`)
 
 }
 
@@ -77,9 +88,7 @@ function createCLI() {
     }
   });
 
-  if (argv.verbose) {
-    console.log('Calling Threat Dragon with CLI interface');
-  }
+  log.info('Calling Threat Dragon with CLI interface');
 
   win.loadURL(modalPath);
   win.on('close', () => { win = null });
@@ -106,9 +115,7 @@ function createMainWindow() {
     }
   });
 
-  if (argv.verbose) {
-    console.log('Calling Threat Dragon with user interface');
-  }
+  log.info('Calling Threat Dragon with user interface');
 
   window.loadURL(modalPath);
   window.on('closed', onClosed);
