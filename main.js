@@ -51,8 +51,6 @@ function checkIfValidCommand() {
 
 function doCommand() {
 
-  mainWindow.hide();
-
   if (argv.verbose) {
     console.log('CLI called with command', command, 'and', process.argv.length, 'arguments');
   }
@@ -66,29 +64,37 @@ function onClosed() {
 }
 
 function createCLI() {
-  var window = new electron.BrowserWindow({ show: false, width: 0, height: 0});
+
+  const modalPath = path.join('file://', __dirname, './index.html');
+
+  var win = new electron.BrowserWindow({
+    show: false,
+    frame: false,
+    width: 800,
+    height: 600,
+    webPreferences: {
+      nodeIntegration: true
+    }
+  });
 
   if (argv.verbose) {
     console.log('Calling Threat Dragon with CLI interface');
   }
 
-  window.loadURL(`file://${__dirname}/index.html`);
-  window.on('closed', onClosed);
-  window.webContents.on('new-window', function (e, url) {
+  win.loadURL(modalPath);
+  win.on('close', () => { win = null });
+  win.webContents.on('new-window', function (e, url) {
     e.preventDefault();
     require('electron').shell.openExternal(url);
   });
 
-  return window;
+  return win;
 }
 
 function createMainWindow() {
 
+  const modalPath = path.join('file://', __dirname, './index.html');
   const { width, height } = electron.screen.getPrimaryDisplay().workAreaSize;
-
-  if (argv.verbose) {
-    console.log('Calling Threat Dragon with user interface');
-  }
 
   var window = new electron.BrowserWindow({
     title: "OWASP Threat Dragon",
@@ -100,7 +106,11 @@ function createMainWindow() {
     }
   });
 
-  window.loadURL(`file://${__dirname}/index.html`);
+  if (argv.verbose) {
+    console.log('Calling Threat Dragon with user interface');
+  }
+
+  window.loadURL(modalPath);
   window.on('closed', onClosed);
   window.webContents.on('new-window', function (e, url) {
     e.preventDefault();
