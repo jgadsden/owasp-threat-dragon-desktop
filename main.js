@@ -4,9 +4,6 @@ const path = require('path');
 const electron = require('electron');
 const app = electron.app;
 const setupEvents = require('./config/squirrel');
-const log = require('electron-log');
-
-var command;
 if (setupEvents.handleSquirrelEvent(app)) {
   // squirrel event handled and app will exit in 1000ms, so don't do anything else
         return;
@@ -14,6 +11,7 @@ if (setupEvents.handleSquirrelEvent(app)) {
 
 // use yargs to provide a command line interface
 // can call it using './electron . --help' after 'ln -sf node_modules/electron/cli.js electron'
+var command;
 const argv = require('yargs')
   .usage('Usage: $0 <command> [options]')
   .command({
@@ -39,32 +37,24 @@ const argv = require('yargs')
   .argv;
 
 // set the log level to one of error, warn, info, verbose, debug, silly
-let verboseLevel = argv.verbose;
-if (verboseLevel == 0) {
-  log.transports.console.level = 'error';
-} else if (verboseLevel == 1) {
-  log.transports.console.level = 'info';
-} else if (verboseLevel == 2) {
-  log.transports.console.level = 'debug';
-} else {
-  log.transports.console.level = 'silly';
-}
+const log = require('./logger').init(argv.verbose);
 
 // prevent window being garbage collected
 let mainWindow;
 
-function checkIfValidCommand() {
-  if (command != 'report') {
-    return false;
-  }
-
-  return true;
+function checkIfCliCommand() {
+  return (command != null);
 }
 
 function doCommand() {
 
-  log.debug('CLI called with command', command, 'and', process.argv.length, 'arguments, verbose level of', verboseLevel);
-  log.info(`creating report ${argv.pdf} from ${argv.json}`)
+  log.debug('CLI command', command, 'with', process.argv.length, 'arguments');
+
+  if (command == 'report') {
+    log.info(`creating report ${argv.pdf} from ${argv.json}`)
+  } else {
+    log.warn('unrecognised command', command);
+  }
 
 }
 
@@ -80,9 +70,8 @@ function createCLI() {
 
   var win = new electron.BrowserWindow({
     show: false,
-    frame: false,
-    width: 800,
-    height: 600,
+    width: 0,
+    height: 0,
     webPreferences: {
       nodeIntegration: true
     }
@@ -132,15 +121,13 @@ app.on('window-all-closed', () => {
 });
 
 app.on('activate', () => {
-  let isCliCommand = checkIfValidCommand();
-
-  if (!mainWindow && !isCliCommand) {
+  if (!mainWindow && !checkIfCliCommand()) {
     mainWindow = createMainWindow();
   }
 });
 
 app.on('ready', () => {
-  let isCliCommand = checkIfValidCommand();
+  let isCliCommand = checkIfCliCommand();
 
   if (!isCliCommand) {
     mainWindow = createMainWindow();
