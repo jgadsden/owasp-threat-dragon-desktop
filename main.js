@@ -20,7 +20,7 @@ const argv = require('yargs')
     desc: 'Export a JSON threat model as a PDF report',
     handler: (argv) => {
       command = 'report';
-      app.quit();
+//      app.quit();
     }
   })
   .demandCommand(0, 0, '', 'Command not recognised')
@@ -37,25 +37,35 @@ const argv = require('yargs')
   .argv;
 
 // set the log level to one of error, warn, info, verbose, debug, silly
-const log = require('./logger').init(argv.verbose);
+var logLevel = argv.verbose;
+const log = require('./app/logger').init(logLevel);
+global.sharedObject = {
+  logLevel: logLevel
+}
 
 // prevent window being garbage collected
 let mainWindow;
 
-function checkIfCliCommand() {
+function isCliCommand() {
   return (command != null);
 }
 
-function doCommand() {
+function getPath() {
+
+  var cmdPath;
 
   log.debug('CLI command', command, 'with', process.argv.length, 'arguments');
 
   if (command == 'report') {
     log.info(`creating report ${argv.pdf} from ${argv.json}`)
+    cmdPath = path.join('file://', __dirname, './index.html');
   } else {
-    log.warn('unrecognised command', command);
+    log.error('unrecognised command', command);
   }
 
+  log.debug('Command path', cmdPath);
+
+  return cmdPath;
 }
 
 function onClosed() {
@@ -66,7 +76,7 @@ function onClosed() {
 
 function createCLI() {
 
-  const modalPath = path.join('file://', __dirname, './index.html');
+  var modalPath = getPath();
 
   var win = new electron.BrowserWindow({
     show: false,
@@ -121,23 +131,21 @@ app.on('window-all-closed', () => {
 });
 
 app.on('activate', () => {
-  if (!mainWindow && !checkIfCliCommand()) {
+  if (!mainWindow && !isCliCommand()) {
     mainWindow = createMainWindow();
   }
 });
 
 app.on('ready', () => {
-  let isCliCommand = checkIfCliCommand();
 
-  if (!isCliCommand) {
+  if (!isCliCommand()) {
     mainWindow = createMainWindow();
   } else {
     mainWindow = createCLI();
-    doCommand();
   }
 
   mainWindow.once('ready-to-show', () => {
-    if (!isCliCommand) {
+    if (!isCliCommand()) {
       mainWindow.show();
       mainWindow.maximize();
     }

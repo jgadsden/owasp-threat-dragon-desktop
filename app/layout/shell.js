@@ -1,6 +1,9 @@
 ﻿'use strict';
 
 function shell($rootScope, $scope, $location, $route, common, datacontext, electron, threatmodellocator, VERSION) {
+
+    log.debug('Shell logger verbosity level', log.transports.console.level);
+
     var controllerId = 'shell';
     var logSuccess = common.logger.getLogFn(controllerId, 'success');
     var logError = common.logger.getLogFn(controllerId, 'error');
@@ -14,11 +17,13 @@ function shell($rootScope, $scope, $location, $route, common, datacontext, elect
     activate();
 
     function activate() {
+        log.debug('Shell -> activate');
         logSuccess('Threat Dragon loaded!', null, true);
         common.activateController([], controllerId);
     }
 
     function menuConfigurator() {
+        log.debug('Shell -> menuConfigurator');
         var template = [
             {
                 label: 'File',

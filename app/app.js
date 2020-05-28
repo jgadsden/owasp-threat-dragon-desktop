@@ -25,6 +25,9 @@ require('./app/welcome');
 require('./app/services');
 require('./app/threatmodels');
 
+const log = require('./app/logger').init(require('electron').remote.getGlobal('sharedObject').logLevel);
+log.info('App logger verbosity level', log.transports.console.level);
+
 app.config(['$qProvider', function ($qProvider) {
     $qProvider.errorOnUnhandledRejections(false);
 }]);

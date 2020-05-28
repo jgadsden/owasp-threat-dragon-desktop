@@ -2,13 +2,15 @@
 
 function welcome($scope, $location, $route, common, electron, threatmodellocator) {
 
+    log.debug('Welcome logger verbosity level', log.transports.console.level);
+
     /*jshint validthis: true */
     var fs = require('fs');
     var controllerId = 'welcome';
     var logError = common.logger.getLogFn(controllerId, 'error');
     var vm = this;
     var getLogFn = common.logger.getLogFn;
-    var log = getLogFn(controllerId);
+    var logSuccess = getLogFn(controllerId);
 
     // Bindable properties and functions are placed on vm
     vm.title = 'Welcome';
@@ -18,10 +20,12 @@ function welcome($scope, $location, $route, common, electron, threatmodellocator
     activate();
 
     function activate() {
-        common.activateController([], controllerId).then(function () { log('Activated Welcome View'); });
+        log.debug('Welcome -> activate');
+        common.activateController([], controllerId).then(function () { logSuccess('Activated Welcome View'); });
     }
 
     function openModel() {
+        log.debug('Welcome -> openModel');
         electron.dialog.open(function (fileNames) {
             var path = threatmodellocator.getModelPath( fileNames[0]);
             if ($location.path() == '/threatmodel/' + path) {
@@ -29,12 +33,14 @@ function welcome($scope, $location, $route, common, electron, threatmodellocator
             } else {
                 $location.path('/threatmodel/' + path);
             }
+            log.debug('Welcome -> openModel path', $location.path());
             $scope.$apply();
         },
         function() {});
     }
 
     function openNewModel() {
+        log.debug('Welcome -> openNewModel');
         var model = { summary: { title: "New Threat Model" }, detail: { contributors: [], diagrams: [] } };
         var success = true;
         electron.dialog.save(function (fileName) {
@@ -42,11 +48,13 @@ function welcome($scope, $location, $route, common, electron, threatmodellocator
                 if (err) {
                     logError(err);
                     success = false;
+                    log.error(err);
                 }
             });
             if (success) {
                 var path = threatmodellocator.getModelPath( fileName );
                 $location.path('/threatmodel/' + path);
+                log.debug('Welcome -> openNewModel path', $location.path());
                 $scope.$apply();
             }
         },
