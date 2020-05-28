@@ -27,6 +27,7 @@ function threatmodellocator() {
             }
         }
 
+        log.debug('Threat Model Locator -> getModelLocation', result);
         return result;
     }
 
@@ -34,6 +35,7 @@ function threatmodellocator() {
     //base64 encode it unless it already looks encoded
     //ignore demo
     function getModelPath(location) {
+        log.debug('Threat Model Locator -> getModelPath');
 
         var result = location;
 

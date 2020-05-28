@@ -1,12 +1,15 @@
 'use strict';
 
 function desktopreport($q, $routeParams, $location, common, datacontext, threatmodellocator, electron) {
+
+    log.debug('Desktop Report logger verbosity level', log.transports.console.level);
+
     var fsp = require('promise-fs');
     /*jshint validthis: true */
     var vm = this;
     var controllerId = 'desktopreport';
     var getLogFn = common.logger.getLogFn;
-    var log = getLogFn(controllerId);
+    var logSuccess = getLogFn(controllerId);
     var logError = getLogFn(controllerId, 'error');
 
     // Bindable properties and functions are placed on vm.
@@ -23,7 +26,7 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
 
     function activate() {
         common.activateController([getThreatModel()], controllerId)
-            .then(function () { log('Activated Desktop Report Controller'); });
+            .then(function () { logSuccess('Activated Desktop Report Controller'); });
     }
 
     function getThreatModel(forceReload) {
@@ -85,7 +88,7 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
                     });
                 },
                 function() {
-                    log('Cancelled save threat model');
+                    logSuccess('Cancelled save threat model');
                     done();
                 });
             }
@@ -101,7 +104,7 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
         
         function onPrinted(success) {
             if (success) {
-                log('Report printed successfully');
+                logSuccess('Report printed successfully');
                 done();
             } else {
                 // see Electron issue https://github.com/electron/electron/issues/19008

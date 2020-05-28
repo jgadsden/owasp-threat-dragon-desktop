@@ -15,6 +15,14 @@ var command;
 const argv = require('yargs')
   .usage('Usage: $0 <command> [options]')
   .command({
+    command: 'run',
+    aliases: ['r', 'x'],
+    desc: 'Run threat dragon application',
+    handler: (argv) => {
+      command = 'run';
+    }
+  })
+  .command({
     command: 'edit <json>',
     aliases: ['e'],
     desc: 'Edit a given JSON threat model',
@@ -23,9 +31,9 @@ const argv = require('yargs')
     }
   })
   .command({
-    command: 'report <json> <pdf>',
-    aliases: ['r', 'rep'],
-    desc: 'Export a JSON threat model as a PDF report',
+    command: 'print <json> <pdf>',
+    aliases: ['p', 'report'],
+    desc: 'Print out JSON threat model as a PDF report',
     handler: (argv) => {
       command = 'report';
 //      app.quit();
@@ -61,22 +69,27 @@ function isCliCommand() {
 function doCommand() {
 
   var cmdPath;
+  var win;
 
   log.debug('CLI command', command, 'with', process.argv.length, 'arguments');
 
-  if (command == 'edit') {
-    log.info(`editing ${argv.pdf}`)
-    cmdPath = path.join('file://', __dirname, './index.html');
+  if (command == 'run') {
+    log.info('Running threat dragon application');
+    win = createMainWindow();
+  } else if (command == 'edit') {
+    log.info(`Editing ${argv.json}`)
+    cmdPath = path.join('file://', __dirname, './app/threatmodels/desktopreport.html');
+    const { width, height } = electron.screen.getPrimaryDisplay().workAreaSize;
+    win = createCLI(cmdPath, true, width - 50, height - 50);
   } else if (command == 'report') {
-    log.info(`creating report ${argv.pdf} from ${argv.json}`)
+    log.info(`Creating report ${argv.pdf} from ${argv.json}`)
     cmdPath = path.join('file://', __dirname, './index.html');
+    win = createCLI(cmdPath);
   } else {
-    log.error('unrecognised command', command);
+    log.error('Unrecognised command', command);
   }
 
-  log.debug('Command path', cmdPath);
-
-  return createCLI(cmdPath);
+  return win;
 }
 
 function onClosed() {
@@ -85,12 +98,14 @@ function onClosed() {
   mainWindow = null;
 }
 
-function createCLI(modalPath) {
+function createCLI(path, show = false, width = 0, height = 0) {
+
+  log.debug('Command path', path);
 
   var win = new electron.BrowserWindow({
-    show: false,
-    width: 0,
-    height: 0,
+    show: show,
+    width: width,
+    height: height,
     webPreferences: {
       nodeIntegration: true
     }
@@ -98,7 +113,7 @@ function createCLI(modalPath) {
 
   log.info('Calling Threat Dragon with CLI interface');
 
-  win.loadURL(modalPath);
+  win.loadURL(path);
   win.on('close', () => { win = null });
   win.webContents.on('new-window', function (e, url) {
     e.preventDefault();

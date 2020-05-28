@@ -25,6 +25,7 @@ function datacontext($q, datacontextdemo, electron) {
     return service;
 
     function load(location, forceQuery) {
+        log.debug('Datacontext -> load');
         var result;
 
         if (location === 'demo') {
@@ -55,15 +56,18 @@ function datacontext($q, datacontextdemo, electron) {
     }
 
     function create(location, model) {
+        log.debug('Datacontext -> create');
         service.threatModelLocation = null;
         return save(model);
     }
 
     function update() {
+        log.debug('Datacontext -> update');
         return save(service.threatModel);
     }
 
     function saveThreatModelDiagram(diagramId, diagramData) {
+        log.debug('Datacontext -> saveThreatModelDiagram');
         var diagramToSave = service.threatModel.detail.diagrams.find(function (diagram) {
             return diagram.id == diagramId;
         });
@@ -78,6 +82,7 @@ function datacontext($q, datacontextdemo, electron) {
     }
 
     function deleteModel() {
+        log.debug('Datacontext -> deleteModel');
 
         if (service.threatModelLocation) {
             return fsp.unlink(service.threatModelLocation).then(onDeleted);
@@ -95,6 +100,7 @@ function datacontext($q, datacontextdemo, electron) {
     }
 
     function close() {
+        log.debug('Datacontext -> close');
         service.threatModel = null;
         service.threatModelLocation = null;
         service.lastLoadedLocation = null;
@@ -102,11 +108,13 @@ function datacontext($q, datacontextdemo, electron) {
     }
 
     function saveAs() {
+        log.debug('Datacontext -> saveAs');
         service.threatModelLocation = null;
         return save(service.threatModel);
     }
 
     function save(model) {
+        log.debug('Datacontext -> save');
         var deferred = $q.defer();
 
         if (service.threatModelLocation && service.threatModelLocation != 'demo') {
@@ -147,6 +155,7 @@ function datacontext($q, datacontextdemo, electron) {
     }
 
     function loadFromFile(forceQuery) {
+        log.debug('Datacontext -> loadFromFile');
         if (service.threatModel && !forceQuery && service.lastLoadedLocation === service.threatModelLocation) {
             return $q.when(service.threatModel);
         }
@@ -178,6 +187,7 @@ function datacontext($q, datacontextdemo, electron) {
         } else {
             electron.currentWindow.setTitle('OWASP Threat Dragon');
         }  
+        log.debug('Datacontext -> setLocation title', electron.currentWindow.getTitle());
     }
 }
 

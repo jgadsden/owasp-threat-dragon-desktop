@@ -25,9 +25,9 @@ function welcome($scope, $location, $route, common, electron, threatmodellocator
     }
 
     function openModel() {
-        log.debug('Welcome -> openModel');
         electron.dialog.open(function (fileNames) {
-            var path = threatmodellocator.getModelPath( fileNames[0]);
+            log.debug('Welcome -> openModel', fileNames[0]);
+            var path = threatmodellocator.getModelPath(fileNames[0]);
             if ($location.path() == '/threatmodel/' + path) {
                 $route.reload();
             } else {
