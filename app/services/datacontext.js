@@ -2,6 +2,8 @@
 
 function datacontext($q, datacontextdemo, electron) {
 
+    log.debug('Datacontext logger verbosity level', log.transports.console.level);
+
     var fsp = require('promise-fs');
     var threatModelLocation = null;
     var threatModel = null;

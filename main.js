@@ -15,6 +15,14 @@ var command;
 const argv = require('yargs')
   .usage('Usage: $0 <command> [options]')
   .command({
+    command: 'edit <json>',
+    aliases: ['e'],
+    desc: 'Edit a given JSON threat model',
+    handler: (argv) => {
+      command = 'edit';
+    }
+  })
+  .command({
     command: 'report <json> <pdf>',
     aliases: ['r', 'rep'],
     desc: 'Export a JSON threat model as a PDF report',
@@ -50,13 +58,16 @@ function isCliCommand() {
   return (command != null);
 }
 
-function getPath() {
+function doCommand() {
 
   var cmdPath;
 
   log.debug('CLI command', command, 'with', process.argv.length, 'arguments');
 
-  if (command == 'report') {
+  if (command == 'edit') {
+    log.info(`editing ${argv.pdf}`)
+    cmdPath = path.join('file://', __dirname, './index.html');
+  } else if (command == 'report') {
     log.info(`creating report ${argv.pdf} from ${argv.json}`)
     cmdPath = path.join('file://', __dirname, './index.html');
   } else {
@@ -65,7 +76,7 @@ function getPath() {
 
   log.debug('Command path', cmdPath);
 
-  return cmdPath;
+  return createCLI(cmdPath);
 }
 
 function onClosed() {
@@ -74,9 +85,7 @@ function onClosed() {
   mainWindow = null;
 }
 
-function createCLI() {
-
-  var modalPath = getPath();
+function createCLI(modalPath) {
 
   var win = new electron.BrowserWindow({
     show: false,
@@ -141,7 +150,7 @@ app.on('ready', () => {
   if (!isCliCommand()) {
     mainWindow = createMainWindow();
   } else {
-    mainWindow = createCLI();
+    mainWindow = doCommand();
   }
 
   mainWindow.once('ready-to-show', () => {

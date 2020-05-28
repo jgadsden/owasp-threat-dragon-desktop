@@ -2,6 +2,8 @@
 
 function threatmodellocator() {
 
+    log.debug('Threat Model Locator logger verbosity level', log.transports.console.level);
+
     var service = {
         getModelLocation: getModelLocation,
         getModelPath: getModelPath,

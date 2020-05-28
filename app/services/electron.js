@@ -9,6 +9,9 @@ const path = require('path');
 const userDataPath = electron.remote.app.getPath('userData');
 
 function electronservice(common) {
+
+    log.debug('Electron Service logger verbosity level', log.transports.console.level);
+
     var logInfo = common.logger.getLogFn('electron service', 'info');
     var logError = common.logger.getLogFn('electron service', 'error');
 
