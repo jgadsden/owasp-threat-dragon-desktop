@@ -2,7 +2,7 @@
 
 function welcome($scope, $location, $route, common, electron, threatmodellocator) {
 
-    log.debug('Welcome logger verbosity level', log.transports.console.level);
+    log.debug('Welcome loaded with verbosity level', log.transports.console.level);
 
     /*jshint validthis: true */
     var fs = require('fs');
@@ -20,20 +20,20 @@ function welcome($scope, $location, $route, common, electron, threatmodellocator
     activate();
 
     function activate() {
-        log.debug('Welcome -> activate');
+        log.debug('Welcome -> activate at location.url', $location.url());
         common.activateController([], controllerId).then(function () { logInfo('Activated Welcome View'); });
     }
 
     function openModel() {
         electron.dialog.open(function (fileNames) {
-            log.debug('Welcome -> openModel', fileNames[0]);
+            log.debug('Welcome -> openModel file name', fileNames[0]);
             var path = threatmodellocator.getModelPath(fileNames[0]);
             if ($location.path() == '/threatmodel/' + path) {
                 $route.reload();
             } else {
                 $location.path('/threatmodel/' + path);
             }
-            log.debug('Welcome -> openModel path', $location.path());
+            log.debug('Welcome -> openModel -> location.url', $location.url());
             $scope.$apply();
         },
         function() {});
@@ -54,7 +54,7 @@ function welcome($scope, $location, $route, common, electron, threatmodellocator
             if (success) {
                 var path = threatmodellocator.getModelPath( fileName );
                 $location.path('/threatmodel/' + path);
-                log.debug('Welcome -> openNewModel path', $location.path());
+                log.debug('Welcome -> openNewModel -> location.url', $location.url());
                 $scope.$apply();
             }
         },

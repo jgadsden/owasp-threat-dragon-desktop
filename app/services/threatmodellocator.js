@@ -35,7 +35,7 @@ function threatmodellocator() {
     //base64 encode it unless it already looks encoded
     //ignore demo
     function getModelPath(location) {
-        log.debug('Threat Model Locator -> getModelPath');
+        log.silly('Threat Model Locator -> getModelPath location', location);
 
         var result = location;
 

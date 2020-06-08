@@ -52,15 +52,20 @@ const argv = require('yargs')
   .wrap(80)
   .argv;
 
-// set the log level to one of error, warn, info, verbose, debug, silly
-var logLevel = argv.verbose;
-const log = require('./app/logger').init(logLevel);
-global.sharedObject = {
-  logLevel: logLevel
-}
-
 // prevent window being garbage collected
 let mainWindow;
+
+// some global values for the app
+global.sharedObject = {
+  command: command,
+  logLevel: argv.verbose,
+  modelFile: argv.json,
+  reportFile: argv.pdf,
+  url: '/'
+}
+
+// set the log level to one of error, warn, info, verbose, debug, silly
+const log = require('./app/logger').init(global.sharedObject.logLevel);
 
 function isCliCommand() {
   return (command != null);
@@ -71,20 +76,19 @@ function doCommand() {
   var cmdPath;
   var win;
 
-  log.debug('CLI command', command, 'with', process.argv.length, 'arguments');
+  log.debug('CLI command', global.sharedObject.command, 'with', process.argv.length, 'arguments');
 
   if (command == 'run') {
     log.info('Running threat dragon application');
     win = createMainWindow();
   } else if (command == 'edit') {
-    log.info(`Editing ${argv.json}`)
-    cmdPath = path.join('file://', __dirname, './index-edit.html');
+    log.info('Editing file:', global.sharedObject.modelFile);
     const { width, height } = electron.screen.getPrimaryDisplay().workAreaSize;
-    win = createCLI(cmdPath, true, width - 50, height - 50);
+    global.sharedObject.url = '/welcome';
+    win = createCLI(true, width - 50, height - 50);
   } else if (command == 'report') {
-    log.info(`Creating report ${argv.pdf} from ${argv.json}`)
-    cmdPath = path.join('file://', __dirname, './index.html');
-    win = createCLI(cmdPath);
+    log.info('Creating report', global.sharedObject.reportFile , 'from', global.sharedObject.modelFile);
+    win = createCLI();
   } else {
     log.error('Unrecognised command', command);
   }
@@ -98,9 +102,9 @@ function onClosed() {
   mainWindow = null;
 }
 
-function createCLI(path, show = false, width = 0, height = 0) {
+function createCLI(show = false, width = 0, height = 0) {
 
-  log.debug('Command path', path);
+  const modalPath = path.join('file://', __dirname, './index.html');
 
   var win = new electron.BrowserWindow({
     show: show,
@@ -113,7 +117,7 @@ function createCLI(path, show = false, width = 0, height = 0) {
 
   log.info('Calling Threat Dragon with CLI interface');
 
-  win.loadURL(path);
+  win.loadURL(modalPath);
   win.on('close', () => { win = null });
   win.webContents.on('new-window', function (e, url) {
     e.preventDefault();

@@ -25,8 +25,13 @@ require('./app/welcome');
 require('./app/services');
 require('./app/threatmodels');
 
-const log = require('./app/logger').init(require('electron').remote.getGlobal('sharedObject').logLevel);
-log.info('App logger verbosity level', log.transports.console.level);
+const sharedObject = require('electron').remote.getGlobal('sharedObject');
+const log = require('./app/logger').init(sharedObject.logLevel);
+log.info('App loaded with logger verbosity level:', log.transports.console.level);
+log.debug('App global model file:', sharedObject.modelFile);
+log.debug('App global report file:', sharedObject.reportFile);
+log.debug('App global command:', sharedObject.command);
+log.debug('App global url:', sharedObject.url);
 
 app.config(['$qProvider', function ($qProvider) {
     $qProvider.errorOnUnhandledRejections(false);
@@ -39,6 +44,10 @@ app.run(['$q',
 
 app.run(['$rootScope', '$location',
     function ($rootScope, $location) {
+        log.debug('App.run with location.url', $location.url());
+        $location.url(sharedObject.url);
+        log.debug('App.run with changed location.url', $location.url());
+        log.silly('App.run with location', $location);
         $rootScope.location = $location;
     }]);
 
