@@ -11,6 +11,7 @@ function shell($rootScope, $scope, $location, $route, common, datacontext, elect
     menuConfigurator();
 
     $scope.$on('$viewContentLoaded', function () {
+        log.debug('Shell -> appLoaded');
         $rootScope.appLoaded = true;
     });
 

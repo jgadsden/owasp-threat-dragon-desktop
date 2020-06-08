@@ -10,7 +10,7 @@ function welcome($scope, $location, $route, common, electron, threatmodellocator
     var logError = common.logger.getLogFn(controllerId, 'error');
     var vm = this;
     var getLogFn = common.logger.getLogFn;
-    var logSuccess = getLogFn(controllerId);
+    var logInfo = getLogFn(controllerId);
 
     // Bindable properties and functions are placed on vm
     vm.title = 'Welcome';
@@ -21,7 +21,7 @@ function welcome($scope, $location, $route, common, electron, threatmodellocator
 
     function activate() {
         log.debug('Welcome -> activate');
-        common.activateController([], controllerId).then(function () { logSuccess('Activated Welcome View'); });
+        common.activateController([], controllerId).then(function () { logInfo('Activated Welcome View'); });
     }
 
     function openModel() {

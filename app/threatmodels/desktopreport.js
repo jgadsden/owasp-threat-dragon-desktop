@@ -9,7 +9,8 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
     var vm = this;
     var controllerId = 'desktopreport';
     var getLogFn = common.logger.getLogFn;
-    var logSuccess = getLogFn(controllerId);
+    var logInfo = getLogFn(controllerId);
+    var logSuccess = getLogFn(controllerId, 'success');
     var logError = getLogFn(controllerId, 'error');
 
     // Bindable properties and functions are placed on vm.
@@ -26,7 +27,7 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
 
     function activate() {
         common.activateController([getThreatModel()], controllerId)
-            .then(function () { logSuccess('Activated Desktop Report Controller'); });
+            .then(function () { logInfo('Activated Desktop Report Controller'); });
     }
 
     function getThreatModel(forceReload) {
@@ -88,7 +89,7 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
                     });
                 },
                 function() {
-                    logSuccess('Cancelled save threat model');
+                    logInfo('Cancelled save threat model');
                     done();
                 });
             }

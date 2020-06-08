@@ -78,7 +78,7 @@ function doCommand() {
     win = createMainWindow();
   } else if (command == 'edit') {
     log.info(`Editing ${argv.json}`)
-    cmdPath = path.join('file://', __dirname, './app/threatmodels/desktopreport.html');
+    cmdPath = path.join('file://', __dirname, './index-edit.html');
     const { width, height } = electron.screen.getPrimaryDisplay().workAreaSize;
     win = createCLI(cmdPath, true, width - 50, height - 50);
   } else if (command == 'report') {
