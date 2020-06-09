@@ -3,6 +3,7 @@
 const path = require('path');
 const electron = require('electron');
 const app = electron.app;
+const btoa = require('btoa-lite');
 const setupEvents = require('./config/squirrel');
 if (setupEvents.handleSquirrelEvent(app)) {
   // squirrel event handled and app will exit in 1000ms, so don't do anything else
@@ -28,6 +29,14 @@ const argv = require('yargs')
     desc: 'Edit a given JSON threat model',
     handler: (argv) => {
       command = 'edit';
+    }
+  })
+  .command({
+    command: 'open <json>',
+    aliases: ['o'],
+    desc: 'Open a given JSON threat model',
+    handler: (argv) => {
+      command = 'open';
     }
   })
   .command({
@@ -73,22 +82,25 @@ function isCliCommand() {
 
 function doCommand() {
 
-  var cmdPath;
   var win;
+  const { width, height } = electron.screen.getPrimaryDisplay().workAreaSize;
 
   log.debug('CLI command', global.sharedObject.command, 'with', process.argv.length, 'arguments');
 
-  if (command == 'run') {
-    log.info('Running threat dragon application');
-    win = createMainWindow();
-  } else if (command == 'edit') {
-    log.info('Editing file:', global.sharedObject.modelFile);
-    const { width, height } = electron.screen.getPrimaryDisplay().workAreaSize;
-    global.sharedObject.url = '/welcome';
+  if (command == 'edit') {
+    log.verbose('Editing file:', global.sharedObject.modelFile);
+    global.sharedObject.url = '/threatmodel/edit/' + btoa(global.sharedObject.modelFile);
     win = createCLI(true, width - 50, height - 50);
+  } else if (command == 'open') {
+    log.verbose('Editing file:', global.sharedObject.modelFile);
+    win = createCLI(true, width - 50, height - 50);
+    global.sharedObject.url = '/threatmodel/' + btoa(global.sharedObject.modelFile);
   } else if (command == 'report') {
-    log.info('Creating report', global.sharedObject.reportFile , 'from', global.sharedObject.modelFile);
+    log.verbose('Creating report', global.sharedObject.reportFile , 'from', global.sharedObject.modelFile);
     win = createCLI();
+  } else if (command == 'run') {
+    log.verbose('Running threat dragon application');
+    win = createCLI(true, width - 50, height - 50);
   } else {
     log.error('Unrecognised command', command);
   }
@@ -98,7 +110,6 @@ function doCommand() {
 
 function onClosed() {
   // dereference the window
-  // for multiple windows store them in an array
   mainWindow = null;
 }
 
