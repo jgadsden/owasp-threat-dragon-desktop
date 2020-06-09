@@ -21,7 +21,10 @@ function welcome($scope, $location, $route, common, electron, threatmodellocator
 
     function activate() {
         log.debug('Welcome -> activate at location.url', $location.url());
-        common.activateController([], controllerId).then(function () { logInfo('Activated Welcome View'); });
+        common.activateController([], controllerId).then(function () { 
+                 logInfo('Activated Welcome View');
+                 log.info('Activated Welcome View');
+             });
     }
 
     function openModel() {

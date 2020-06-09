@@ -76,6 +76,7 @@ function electronservice(common) {
     function getUserData(location) {
         const data = parseDataFile(location.configName, defaultPreferences);
         logInfo('got ' + data);
+        log.info('got', data);
         return data[location.key];
     }
 
@@ -87,9 +88,11 @@ function electronservice(common) {
             logInfo('writing: ' + JSON.stringify(data));
             fs.writeFileSync(getFilePath(configName), JSON.stringify(data), 'utf8');
             logInfo('wrote: ' + JSON.stringify(data));
+            log.info('wrote:', JSON.stringify(data));
         }
         catch (error) {
             logError('error on write: ' + error.message);
+            log.error('error on write:', error.message);
         }
     }
 
@@ -99,6 +102,7 @@ function electronservice(common) {
 
         var filePath = getFilePath(configName);
         logInfo('path = ' + filePath);
+        log.info('path =', filePath);
 
         try {
             return JSON.parse(fs.readFileSync(filePath), 'utf8');

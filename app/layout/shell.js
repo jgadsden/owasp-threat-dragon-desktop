@@ -18,8 +18,9 @@ function shell($rootScope, $scope, $location, $route, common, datacontext, elect
     activate();
 
     function activate() {
-        log.debug('Shell -> activate at location.url', $location.url());
         logSuccess('Threat Dragon loaded!', null, true);
+        log.info('Threat Dragon loaded!');
+        log.debug('Shell -> activate at location.url', $location.url());
         common.activateController([], controllerId);
     }
 
@@ -92,6 +93,7 @@ function shell($rootScope, $scope, $location, $route, common, datacontext, elect
 
                             function onSaveError(error) {
                                 logError(error);
+                                log.error(error);
                             }
                         }
                     },

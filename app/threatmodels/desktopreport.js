@@ -27,7 +27,10 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
 
     function activate() {
         common.activateController([getThreatModel()], controllerId)
-            .then(function () { logInfo('Activated Desktop Report Controller'); });
+            .then(function () { 
+                      logInfo('Activated Desktop Report Controller');
+                      log.info('Activated Desktop Report Controller');
+                  });
     }
 
     function getThreatModel(forceReload) {
@@ -50,6 +53,7 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
     function onError(err) {
         vm.error = err;
         logError(err.data.message);
+        log.error(err.data.message);
     }
 
     function threatModelLocation() {
@@ -90,6 +94,7 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
                 },
                 function() {
                     logInfo('Cancelled save threat model');
+                    log.info('Cancelled save threat model');
                     done();
                 });
             }
@@ -106,6 +111,7 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
         function onPrinted(success) {
             if (success) {
                 logSuccess('Report printed successfully');
+                log.info('Report printed successfully');
                 done();
             } else {
                 // see Electron issue https://github.com/electron/electron/issues/19008
@@ -113,6 +119,7 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
                 // calling reload instead of done is a temporary workaround
                 // it looks bad but the app keeps working
                 logError('Report printing failed');
+                log.error('Report printing failed');
                 electron.currentWindow.webContents.reload();
             }
         }

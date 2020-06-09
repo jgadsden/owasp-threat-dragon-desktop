@@ -25,6 +25,7 @@
             var errorData = { exception: exception, cause: cause };
             var msg = appErrorPrefix + exception.message;
             logError(msg, errorData, true);
+            log.error(msg, errorData);
         };
     }
 })();

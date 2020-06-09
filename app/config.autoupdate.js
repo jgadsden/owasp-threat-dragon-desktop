@@ -48,9 +48,11 @@ function autoupdate(common, dialogs, electron, VERSION) {
             //do nothing
             logError('Failed to configure autoupdate');
             logError(e.message);
+            log.error('Failed to configure autoupdate', e.message);
         }
     } else {
         logInfo('Skipped autoupdate config');
+        log.info('Skipped autoupdate config');
     }
 }
 
