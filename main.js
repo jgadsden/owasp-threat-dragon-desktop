@@ -51,7 +51,7 @@ const argv = require('yargs')
   .options({
     'verbose': {
       alias: 'v',
-      describe: 'Run with verbose logging',
+      describe: 'Log with increaing levels of verbosity',
       type: 'boolean'
     }
   })
@@ -81,32 +81,40 @@ function isCliCommand() {
 function doCommand() {
 
   var win = null;
-  var encFile = btoa(global.sharedObject.modelFile);
+  var encFile;
   const { width, height } = electron.screen.getPrimaryDisplay().workAreaSize;
 
   log.debug('CLI command', global.sharedObject.command, 'with', process.argv.length, 'arguments');
+
+  if (global.sharedObject.modelFile != null) {
+    encFile = btoa(global.sharedObject.modelFile);
+  }
 
   if (command == 'edit') {
     log.verbose('Editing model:', global.sharedObject.modelFile);
     global.sharedObject.url = '/threatmodel/edit/' + encFile;
     win = createCLI(true, width - 50, height - 50);
+
   } else if (command == 'open') {
     log.verbose('Opening model:', global.sharedObject.modelFile);
     win = createCLI(true, width - 50, height - 50);
     global.sharedObject.url = '/threatmodel/' + encFile;
+
   } else if (command == 'pdf') {
     log.verbose('Exporting to PDF report', global.sharedObject.modelFile);
-    win = createCLI();
+//    win = createCLI();
+win = createCLI(true, width - 500, height - 200);
     global.sharedObject.url = '/threatmodel/export/' + encFile;
+
   } else if (command == 'run') {
     log.verbose('Running threat dragon application');
     win = createCLI(true, width - 50, height - 50);
     global.sharedObject.url = '/welcome';
+
   } else {
     log.error('Unrecognised command', command);
   }
 
-win = createCLI(true, width - 500, height - 200);
   return win;
 }
 

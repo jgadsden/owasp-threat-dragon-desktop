@@ -29,7 +29,8 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
     function activate() {
         common.activateController([getThreatModel()], controllerId)
             .then(function () { 
-//                      exportPDF();
+//isPrintingOrSaving = true;
+//exportPDF();
                       log.info('Activated Desktop Report Controller');
                   });
     }
@@ -83,7 +84,6 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
             log.debug('Desktop Report on export PDF');
             var pdfPath = datacontext.threatModelLocation.replace('.json', '.pdf');
             if (error) {
-                done();
                 onError(error);
             } else {
                 fsp.writeFile(pdfPath, data).then(function() { 

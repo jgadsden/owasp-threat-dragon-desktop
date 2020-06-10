@@ -61,7 +61,7 @@ function getRoutes() {
         }, {
             url: '/threatmodel/export/:location',
             config: {
-                templateUrl: './app/threatmodels/desktopexport.html',
+                templateUrl: './app/threatmodels/pdfexport.html',
                 title: 'Threat Model Export',
                 settings: {
                 }

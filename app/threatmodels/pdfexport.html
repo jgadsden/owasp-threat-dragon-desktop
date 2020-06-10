@@ -1,0 +1,5 @@
+<div data-ng-controller="desktopreport as vm" class="container-fluid">
+    <row>
+        <div ng-if="!vm.error"><tmt-threat-model-report isPrintingOrSaving="true" loaded="vm.onLoaded()" save="vm.savePDF(done)" print="vm.printPDF(done)" model="vm.threatModel"></tmt-threat-model-report />
+    </row>
+</div>
