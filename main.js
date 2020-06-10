@@ -26,7 +26,7 @@ const argv = require('yargs')
   .command({
     command: 'edit <json>',
     aliases: ['e'],
-    desc: 'Edit a given JSON threat model',
+    desc: 'Edit JSON threat model',
     handler: (argv) => {
       command = 'edit';
     }
@@ -34,18 +34,17 @@ const argv = require('yargs')
   .command({
     command: 'open <json>',
     aliases: ['o'],
-    desc: 'Open a given JSON threat model',
+    desc: 'Open JSON threat model',
     handler: (argv) => {
       command = 'open';
     }
   })
   .command({
-    command: 'print <json> <pdf>',
-    aliases: ['p', 'report'],
-    desc: 'Print out JSON threat model as a PDF report',
+    command: 'pdf <json>',
+    aliases: ['p'],
+    desc: 'Export JSON threat model as PDF',
     handler: (argv) => {
-      command = 'report';
-//      app.quit();
+      command = 'pdf';
     }
   })
   .demandCommand(0, 0, '', 'Command not recognised')
@@ -69,7 +68,6 @@ global.sharedObject = {
   command: command,
   logLevel: argv.verbose,
   modelFile: argv.json,
-  reportFile: argv.pdf,
   url: '/'
 }
 
@@ -82,29 +80,33 @@ function isCliCommand() {
 
 function doCommand() {
 
-  var win;
+  var win = null;
+  var encFile = btoa(global.sharedObject.modelFile);
   const { width, height } = electron.screen.getPrimaryDisplay().workAreaSize;
 
   log.debug('CLI command', global.sharedObject.command, 'with', process.argv.length, 'arguments');
 
   if (command == 'edit') {
-    log.verbose('Editing file:', global.sharedObject.modelFile);
-    global.sharedObject.url = '/threatmodel/edit/' + btoa(global.sharedObject.modelFile);
+    log.verbose('Editing model:', global.sharedObject.modelFile);
+    global.sharedObject.url = '/threatmodel/edit/' + encFile;
     win = createCLI(true, width - 50, height - 50);
   } else if (command == 'open') {
-    log.verbose('Editing file:', global.sharedObject.modelFile);
+    log.verbose('Opening model:', global.sharedObject.modelFile);
     win = createCLI(true, width - 50, height - 50);
-    global.sharedObject.url = '/threatmodel/' + btoa(global.sharedObject.modelFile);
-  } else if (command == 'report') {
-    log.verbose('Creating report', global.sharedObject.reportFile , 'from', global.sharedObject.modelFile);
+    global.sharedObject.url = '/threatmodel/' + encFile;
+  } else if (command == 'pdf') {
+    log.verbose('Exporting to PDF report', global.sharedObject.modelFile);
     win = createCLI();
+    global.sharedObject.url = '/threatmodel/export/' + encFile;
   } else if (command == 'run') {
     log.verbose('Running threat dragon application');
     win = createCLI(true, width - 50, height - 50);
+    global.sharedObject.url = '/welcome';
   } else {
     log.error('Unrecognised command', command);
   }
 
+win = createCLI(true, width - 500, height - 200);
   return win;
 }
 
@@ -166,16 +168,19 @@ function createMainWindow() {
 }
 
 app.on('window-all-closed', () => {
+  log.debug('main window all closed');
   app.quit();
 });
 
 app.on('activate', () => {
+  log.debug('main window app activate');
   if (!mainWindow && !isCliCommand()) {
     mainWindow = createMainWindow();
   }
 });
 
 app.on('ready', () => {
+  log.debug('main window app ready');
 
   if (!isCliCommand()) {
     mainWindow = createMainWindow();
@@ -183,7 +188,13 @@ app.on('ready', () => {
     mainWindow = doCommand();
   }
 
+  if (mainWindow == null) {
+    log.warn('no main window to show');
+    app.quit();
+  }
+
   mainWindow.once('ready-to-show', () => {
+    log.debug('main window ready to show');
     if (!isCliCommand()) {
       mainWindow.show();
       mainWindow.maximize();

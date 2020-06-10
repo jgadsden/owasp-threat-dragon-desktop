@@ -44,30 +44,39 @@ function electronservice(common) {
     }
 
     function save(onSave, onNoSave) {
+        log.debug('Electron Service save');
         dialog.showSaveDialog(remote.getCurrentWindow(), { defaultPath: "new-model.json", filters: [{ name: 'Threat Models', extensions: ['json'] }] }, function (fileName) {
             if (_.isUndefined(fileName)) {
+                log.warn('Electron Service save unsuccessful');
                 onNoSave();
             } else {
+                log.info('Electron Service save to file', fileName);
                 onSave(fileName);
             }
         });
     }
 
     function savePDF(defaultPath, onSave, onNoSave) {
+        log.debug('Electron Service save PDF');
         dialog.showSaveDialog(remote.getCurrentWindow(), { defaultPath: defaultPath, filters: [{name: 'PDF files', extensions: ['pdf'] }] }, function (fileName) {
             if (_.isUndefined(fileName)) {
+                log.warn('Electron Service save PDF unsuccessful');
                 onNoSave();
             } else {
+                log.info('Electron Service save PDF to file', fileName);
                 onSave(fileName);
             }
         });
     }
 
     function open(onOpen, onNoOpen) {
+        log.debug('Electron Service open');
         dialog.showOpenDialog(remote.getCurrentWindow(), { filters: [{ name: 'Threat Models', extensions: ['json'] }, { name: 'All Files', extensions: ['*'] }] }, function (fileNames) {
             if (!_.isUndefined(fileNames)) {
+                log.info('Electron Service open file', fileNames);
                 onOpen(fileNames);
             } else {
+                log.info('Electron Service open unsuccessful');
                 onNoOpen();
             }
         });
