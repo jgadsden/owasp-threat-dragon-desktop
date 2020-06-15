@@ -20,5 +20,5 @@ exports.init = function (level) {
   log.transports.file.level = log.transports.console.level;
 
   return log;
-}
+};
 

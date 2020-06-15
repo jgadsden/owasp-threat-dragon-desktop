@@ -29,7 +29,6 @@ const sharedObject = require('electron').remote.getGlobal('sharedObject');
 const log = require('./app/logger').init(sharedObject.logLevel);
 log.info('App loaded with logger verbosity level:', log.transports.console.level);
 log.debug('App global model file:', sharedObject.modelFile);
-log.debug('App global report file:', sharedObject.reportFile);
 log.debug('App global command:', sharedObject.command);
 log.debug('App global url:', sharedObject.url);
 

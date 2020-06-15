@@ -18,7 +18,7 @@ function electronservice(common) {
     var service = {
         dialog: {
             save: save,
-            savePDF: savePDF,
+            saveAsPDF: saveAsPDF,
             open: open,
             messageBox: messageBox
         },
@@ -56,7 +56,7 @@ function electronservice(common) {
         });
     }
 
-    function savePDF(defaultPath, onSave, onNoSave) {
+    function saveAsPDF(defaultPath, onSave, onNoSave) {
         log.debug('Electron Service save PDF');
         dialog.showSaveDialog(remote.getCurrentWindow(), { defaultPath: defaultPath, filters: [{name: 'PDF files', extensions: ['pdf'] }] }, function (fileName) {
             if (_.isUndefined(fileName)) {

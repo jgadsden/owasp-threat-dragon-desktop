@@ -29,8 +29,6 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
     function activate() {
         common.activateController([getThreatModel()], controllerId)
             .then(function () { 
-//isPrintingOrSaving = true;
-//exportPDF();
                       log.info('Activated Desktop Report Controller');
                   });
     }
@@ -59,6 +57,11 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
         log.error('Desktop Report', err.data.message);
     }
 
+    function exitApp() {
+        let w = require('electron').remote.getCurrentWindow();
+        w.close();
+    }
+
     function threatModelLocation() {
         return threatmodellocator.getModelLocation($routeParams);
     }
@@ -85,9 +88,13 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
             var pdfPath = datacontext.threatModelLocation.replace('.json', '.pdf');
             if (error) {
                 onError(error);
+                //close the app after error
+                exitApp();
             } else {
                 fsp.writeFile(pdfPath, data).then(function() { 
                     log.debug('Desktop Report exported PDF to', pdfPath);
+                    //close the app after export
+                    exitApp();
                 });
             }
         }
@@ -122,7 +129,7 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
                     defaultPath = datacontext.threatModelLocation.replace('.json', '.pdf');
                 }
 
-                electron.dialog.savePDF(defaultPath, function (fileName) {
+                electron.dialog.saveAsPDF(defaultPath, function (fileName) {
                     fsp.writeFile(fileName, data).then(function() { 
                         log.debug('Desktop Report saved PDF');
                         done();

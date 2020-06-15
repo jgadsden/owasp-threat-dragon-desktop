@@ -5,7 +5,6 @@ function shell($rootScope, $scope, $location, $route, common, datacontext, elect
     log.debug('Shell loaded with verbosity level', log.transports.console.level);
 
     var controllerId = 'shell';
-    var logSuccess = common.logger.getLogFn(controllerId, 'success');
     var logError = common.logger.getLogFn(controllerId, 'error');
 
     menuConfigurator();
@@ -18,8 +17,7 @@ function shell($rootScope, $scope, $location, $route, common, datacontext, elect
     activate();
 
     function activate() {
-        logSuccess('Threat Dragon loaded!', null, true);
-        log.info('Threat Dragon loaded!');
+        log.info('Threat Dragon loaded');
         log.debug('Shell -> activate at location.url', $location.url());
         common.activateController([], controllerId);
     }
