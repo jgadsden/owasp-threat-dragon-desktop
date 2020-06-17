@@ -1,13 +1,10 @@
 <div data-ng-controller="desktopreport as vm" class="container-fluid">
-    <div ng-if="!vm.error && !vm.loaded">
-        <p class="h3 text-center">threat model report loading...</p>
-    </div>
     <div ng-if="!vm.error">
         <tmt-threat-model-report `
            loaded="vm.onLoaded()" `
            save="vm.exportPDF()" `
-           model="vm.threatModel" `
-        />
+           hide-controls="true" `
+           model="vm.threatModel">
+        </tmt-threat-model-report>
     </div>
-<body onload="onLoad(); vm.exportPDF();">
 </div>

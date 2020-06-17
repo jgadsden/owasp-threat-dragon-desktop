@@ -47,6 +47,14 @@ const argv = require('yargs')
       command = 'pdf';
     }
   })
+  .command({
+    command: 'print <json>',
+    aliases: ['p'],
+    desc: 'Print JSON threat model',
+    handler: (argv) => {
+      command = 'print';
+    }
+  })
   .demandCommand(0, 0, '', 'Command not recognised')
   .options({
     'verbose': {
@@ -82,7 +90,6 @@ function doCommand() {
 
   var win = null;
   var encFile;
-  const { width, height } = electron.screen.getPrimaryDisplay().workAreaSize;
 
   log.debug('CLI command', global.sharedObject.command, 'with', process.argv.length, 'arguments');
 
@@ -91,24 +98,28 @@ function doCommand() {
   }
 
   if (command == 'edit') {
-    log.verbose('Editing model:', global.sharedObject.modelFile);
+    log.verbose('Edit model:', global.sharedObject.modelFile);
     global.sharedObject.url = '/threatmodel/edit/' + encFile;
-    win = createCLI(true, width - 50, height - 50);
+    win = createMainWindow();
 
   } else if (command == 'open') {
-    log.verbose('Opening model:', global.sharedObject.modelFile);
-    win = createCLI(true, width - 50, height - 50);
+    log.verbose('Open model:', global.sharedObject.modelFile);
+    win = createMainWindow();
     global.sharedObject.url = '/threatmodel/' + encFile;
 
   } else if (command == 'pdf') {
-    log.verbose('Exporting to PDF report', global.sharedObject.modelFile);
-//    win = createCLI();
-win = createCLI(true, width - 500, height - 200);
+    log.verbose('Export to PDF report and close', global.sharedObject.modelFile);
+    win = createMainWindow(false, 0, 0);
     global.sharedObject.url = '/threatmodel/export/' + encFile;
 
+  } else if (command == 'print') {
+    log.verbose('Print model:', global.sharedObject.modelFile);
+    win = createMainWindow();
+    global.sharedObject.url = '/threatmodel/report/' + encFile;
+
   } else if (command == 'run') {
-    log.verbose('Running threat dragon application');
-    win = createCLI(true, width - 50, height - 50);
+    log.verbose('Run threat dragon application');
+    win = createMainWindow();
     global.sharedObject.url = '/welcome';
 
   } else {
@@ -123,56 +134,40 @@ function onClosed() {
   mainWindow = null;
 }
 
-function createCLI(show = false, width = 0, height = 0) {
+function createMainWindow(show = true, displayWidth = -1, displayHeight = -1) {
 
   const modalPath = path.join('file://', __dirname, './index.html');
+  const { width, height } = electron.screen.getPrimaryDisplay().workAreaSize;
+
+  if (displayWidth < 0) {
+    displayWidth = width - 50;
+  }
+
+  if (displayHeight < 0) {
+    displayHeight = height - 50;
+  }
 
   var win = new electron.BrowserWindow({
+    title: "OWASP Threat Dragon",
+    icon: path.join(__dirname, './content/icons/png/64x64.png'),
     show: show,
-    width: width,
-    height: height,
+    width: displayWidth,
+    height: displayHeight,
     webPreferences: {
       nodeIntegration: true
     }
   });
 
-  log.info('Calling Threat Dragon with CLI interface');
+  log.info('Calling Threat Dragon from CLI interface');
 
   win.loadURL(modalPath);
-  win.on('close', () => { win = null });
+  win.on('closed', onClosed);
   win.webContents.on('new-window', function (e, url) {
     e.preventDefault();
     require('electron').shell.openExternal(url);
   });
 
   return win;
-}
-
-function createMainWindow() {
-
-  const modalPath = path.join('file://', __dirname, './index.html');
-  const { width, height } = electron.screen.getPrimaryDisplay().workAreaSize;
-
-  var window = new electron.BrowserWindow({
-    title: "OWASP Threat Dragon",
-    icon: path.join(__dirname, './content/icons/png/64x64.png'),
-    width: width,
-    height: height,
-    webPreferences: {
-      nodeIntegration: true
-    }
-  });
-
-  log.info('Calling Threat Dragon with user interface');
-
-  window.loadURL(modalPath);
-  window.on('closed', onClosed);
-  window.webContents.on('new-window', function (e, url) {
-    e.preventDefault();
-    require('electron').shell.openExternal(url);
-  });
-
-  return window;
 }
 
 app.on('window-all-closed', () => {

@@ -30,6 +30,7 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
         common.activateController([getThreatModel()], controllerId)
             .then(function () { 
                       log.info('Activated Desktop Report Controller');
+                      //vm.exportPDF();
                   });
     }
 
@@ -58,8 +59,9 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
     }
 
     function exitApp() {
-        let w = require('electron').remote.getCurrentWindow();
-        w.close();
+        let win = require('electron').remote.getCurrentWindow();
+        log.debug('Desktop Report exit app');
+        win.close();
     }
 
     function threatModelLocation() {
