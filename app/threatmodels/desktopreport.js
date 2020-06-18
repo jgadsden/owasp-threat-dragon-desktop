@@ -30,8 +30,18 @@ function desktopreport($q, $routeParams, $location, common, datacontext, threatm
         common.activateController([getThreatModel()], controllerId)
             .then(function () { 
                       log.info('Activated Desktop Report Controller');
-                      //vm.exportPDF();
+                      onActivated();
                   });
+    }
+
+    function onActivated() {
+        //do any commands
+        if (globals.command == "pdf") {
+            setTimeout(function() {
+                exportPDF();
+                log.info('Export model', globals.modelFile, "to pdf");
+            }, (2 * 1000));
+        }
     }
 
     function getThreatModel(forceReload) {

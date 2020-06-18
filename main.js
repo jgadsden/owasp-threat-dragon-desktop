@@ -72,7 +72,7 @@ const argv = require('yargs')
 let mainWindow;
 
 // some global values for the app
-global.sharedObject = {
+global.params = {
   command: command,
   logLevel: argv.verbose,
   modelFile: argv.json,
@@ -80,7 +80,7 @@ global.sharedObject = {
 }
 
 // set the log level to one of error, warn, info, verbose, debug, silly
-const log = require('./app/logger').init(global.sharedObject.logLevel);
+const log = require('./app/logger').init(global.params.logLevel);
 
 function isCliCommand() {
   return (command != null);
@@ -91,36 +91,36 @@ function doCommand() {
   var win = null;
   var encFile;
 
-  log.debug('CLI command', global.sharedObject.command, 'with', process.argv.length, 'arguments');
+  log.debug('CLI command', global.params.command, 'with', process.argv.length, 'arguments');
 
-  if (global.sharedObject.modelFile != null) {
-    encFile = btoa(global.sharedObject.modelFile);
+  if (global.params.modelFile != null) {
+    encFile = btoa(global.params.modelFile);
   }
 
   if (command == 'edit') {
-    log.verbose('Edit model:', global.sharedObject.modelFile);
-    global.sharedObject.url = '/threatmodel/edit/' + encFile;
+    log.verbose('Edit model:', global.params.modelFile);
+    global.params.url = '/threatmodel/edit/' + encFile;
     win = createMainWindow();
 
   } else if (command == 'open') {
-    log.verbose('Open model:', global.sharedObject.modelFile);
+    log.verbose('Open model:', global.params.modelFile);
     win = createMainWindow();
-    global.sharedObject.url = '/threatmodel/' + encFile;
+    global.params.url = '/threatmodel/' + encFile;
 
   } else if (command == 'pdf') {
-    log.verbose('Export to PDF report and close', global.sharedObject.modelFile);
+    log.verbose('Export to PDF report and close', global.params.modelFile);
     win = createMainWindow(false, 0, 0);
-    global.sharedObject.url = '/threatmodel/export/' + encFile;
+    global.params.url = '/threatmodel/export/' + encFile;
 
   } else if (command == 'print') {
-    log.verbose('Print model:', global.sharedObject.modelFile);
+    log.verbose('Print model:', global.params.modelFile);
     win = createMainWindow();
-    global.sharedObject.url = '/threatmodel/report/' + encFile;
+    global.params.url = '/threatmodel/report/' + encFile;
 
   } else if (command == 'run') {
     log.verbose('Run threat dragon application');
     win = createMainWindow();
-    global.sharedObject.url = '/welcome';
+    global.params.url = '/welcome';
 
   } else {
     log.error('Unrecognised command', command);
@@ -158,7 +158,7 @@ function createMainWindow(show = true, displayWidth = -1, displayHeight = -1) {
     }
   });
 
-  log.info('Calling Threat Dragon from CLI interface');
+  log.info('Calling Threat Dragon from command line');
 
   win.loadURL(modalPath);
   win.on('closed', onClosed);
