@@ -26,7 +26,7 @@ require('./app/services');
 require('./app/threatmodels');
 
 const globals = require('electron').remote.getGlobal('params');
-const log = require('./app/logger').init(globals.logLevel);
+const log = globals.logger;
 log.info('App loaded with logger verbosity level:', log.transports.console.level);
 log.debug('App global model file:', globals.modelFile);
 log.debug('App global command:', globals.command);

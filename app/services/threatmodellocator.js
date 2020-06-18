@@ -2,6 +2,7 @@
 
 function threatmodellocator() {
 
+    const log = require('electron').remote.getGlobal('params').logger;
     log.debug('Threat Model Locator logger verbosity level', log.transports.console.level);
 
     var service = {

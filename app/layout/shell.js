@@ -1,7 +1,8 @@
-﻿'use strict';
+'use strict';
 
 function shell($rootScope, $scope, $location, $route, common, datacontext, electron, threatmodellocator, VERSION) {
 
+    const log = require('electron').remote.getGlobal('params').logger;
     log.debug('Shell loaded with verbosity level', log.transports.console.level);
 
     var controllerId = 'shell';

@@ -2,6 +2,8 @@
 
 function desktopreport($q, $routeParams, $location, common, datacontext, threatmodellocator, electron) {
 
+    const globals = require('electron').remote.getGlobal('params');
+    const log = globals.logger;
     log.debug('Desktop Report logger verbosity level', log.transports.console.level);
 
     var fsp = require('promise-fs');

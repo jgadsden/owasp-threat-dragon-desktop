@@ -1,7 +1,8 @@
-﻿'use strict';
+'use strict';
 
 function welcome($scope, $location, $route, common, electron, threatmodellocator) {
 
+    const log = require('electron').remote.getGlobal('params').logger;
     log.debug('Welcome loaded with verbosity level', log.transports.console.level);
 
     /*jshint validthis: true */

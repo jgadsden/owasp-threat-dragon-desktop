@@ -71,16 +71,17 @@ const argv = require('yargs')
 // prevent window being garbage collected
 let mainWindow;
 
+// set the log level to one of error, warn, info, verbose, debug, silly
+const log = require('./app/logger').init(argv.verbose);
+
 // some global values for the app
 global.params = {
   command: command,
+  logger: log,
   logLevel: argv.verbose,
   modelFile: argv.json,
   url: '/'
 }
-
-// set the log level to one of error, warn, info, verbose, debug, silly
-const log = require('./app/logger').init(global.params.logLevel);
 
 function isCliCommand() {
   return (command != null);

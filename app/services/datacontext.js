@@ -2,6 +2,7 @@
 
 function datacontext($q, datacontextdemo, electron) {
 
+    const log = require('electron').remote.getGlobal('params').logger;
     log.debug('Datacontext logger verbosity level', log.transports.console.level);
 
     var fsp = require('promise-fs');

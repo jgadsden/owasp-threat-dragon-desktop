@@ -1,6 +1,7 @@
-const log = require('electron-log');
 
 exports.init = function (level) {
+
+  const log = require('electron-log');
 
   //if already set up then return the instance
   if (level == null) {
